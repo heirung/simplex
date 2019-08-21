@@ -21,7 +21,7 @@ A = np.array([[1, 1, 1, 0],
               [2, 1/2, 0, 1]])
 b = np.array([5, 8])
 
-x0 = np.array([0, 0, 5, 8]) # basic feasible starting point
+x0 = np.array([0, 0, 5, 8], dtype=float) # basic feasible starting point
 
 # Solve with simplex (Procedure 13.1): 
 indexing = 1; # print with 1 as base index, like in the texbook

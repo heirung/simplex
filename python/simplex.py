@@ -9,7 +9,7 @@ def simplex(c, A, b, x0, report=False, indexing=0, iterlim=None):
     """Solves a linear programming problem with a basic simplex implementation.
     
     Implements the simplex algorithm, exactly as specified in Procedure 13.1 in
-    Nocedal & Wright - Numerical Optimization (2006, 2nd ed.), Springer.
+    Nocedal & Wright - Numerical Optimization (2006, 2nd ed., Springer).
     
     Attempts to solve the LP problem
  
@@ -64,7 +64,7 @@ def simplex(c, A, b, x0, report=False, indexing=0, iterlim=None):
     if iterlim is None: 
         iterlim = comb(n, m).astype(int) # maximum number of bases
     
-    iterates = np.full((n, iterlim), np.nan) 
+    iterates = np.full((n, iterlim), np.nan, dtype=float) 
     bases = np.full((m, iterlim), np.nan, dtype=int) 
         
     # Basic and nonbasic index sets: (complements of each other)
@@ -82,7 +82,7 @@ def simplex(c, A, b, x0, report=False, indexing=0, iterlim=None):
     if any(x0[basic] == 0): 
         warn('The initial basis is degenerate.') #  (cf. Definition 13.1)
     
-    x = x0.copy()
+    x = x0.astype(float)
     
     iterates[:, 0] = x
     bases[:, 0] = basic
@@ -104,7 +104,7 @@ def simplex(c, A, b, x0, report=False, indexing=0, iterlim=None):
         
         fval = c.T @ x
         
-        if all(sN >= 0): # Optimal point found 
+        if all(sN >= 0): # optimal point found 
             opt = True
             exitflag = 1
             if report:
@@ -170,7 +170,7 @@ def simplex(c, A, b, x0, report=False, indexing=0, iterlim=None):
 
 def print_report(iteration, basic, nbasic, x, la, sN, fval, indexing, opt, 
                  q=None, d=None, x_q_plus=None, p=None, var_leaving_B=None, 
-                 xB_plus=None, xN_plus=None):
+                 xB_plus=None, xN_plus=None):    
     hline = '-' * 80
     set_format = '.0f'
     set_pre = '{'
@@ -180,11 +180,11 @@ def print_report(iteration, basic, nbasic, x, la, sN, fval, indexing, opt,
     vec_suf = ']\''
     sep = ', '
     print(hline)
-    print(f'  Iteration number: {iteration+indexing} ({indexing} indexing)')
+    print(f'  Iteration number: {iteration + indexing} ({indexing} indexing)')
     print('  Basic index set:     ' + 
-          vec_str(basic, set_format, sep, set_pre, set_suf))
+          vec_str(basic + indexing, set_format, sep, set_pre, set_suf))
     print('  Nonbasic index set:  ' + 
-          vec_str(nbasic, set_format, sep, set_pre, set_suf))
+          vec_str(nbasic + indexing, set_format, sep, set_pre, set_suf))
     print('  x_B =    ' + vec_str(x[basic], vec_format, sep, vec_pre, vec_suf))
     print('  x_N =    ' + 
           vec_str(x[nbasic], vec_format, sep, vec_pre, vec_suf))
@@ -198,18 +198,18 @@ def print_report(iteration, basic, nbasic, x, la, sN, fval, indexing, opt,
     else:
         print('  x =      ' + vec_str(x, vec_format, sep, vec_pre, vec_suf))
         print(f'  c\'x = {fval:14.8f}')
-        print(f'  x_{q+indexing} will enter the basis (q = {q+indexing})')
+        print(f'  x_{q + indexing} will enter the basis (q = {q + indexing})')
         print('  d =      ' + vec_str(d, vec_format, sep, vec_pre, vec_suf))
-        print((f'  x_q+ = x_{q+indexing}+ = {x_q_plus:7.3f} '
+        print((f'  x_q+ = x_{q + indexing}+ = {x_q_plus:7.3f} '
                 '\t(value of entering variable/step length)'))
-        print((f'  x_{var_leaving_B+indexing} will leave the basis '
-               f'(position p = {p+indexing} in the basis)'))
+        print((f'  x_{var_leaving_B + indexing} will leave the basis '
+               f'(position p = {p + indexing} in the basis)'))
         print('  x_B+ =   ' + 
               vec_str(xB_plus, vec_format, sep, vec_pre, vec_suf) + 
-              '\t(Current basic vector at new point)')
+              '\t(current basic vector at new point)')
         print('  x_N+ =   ' + 
               vec_str(xN_plus, vec_format, sep, vec_pre, vec_suf) + 
-              ' \t(Current nonbasic vector at new point)')
+              ' \t(current nonbasic vector at new point)')
         print(hline + '\n')
         
 
